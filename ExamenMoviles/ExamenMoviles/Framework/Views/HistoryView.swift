@@ -29,8 +29,7 @@ struct HistoryView: View {
                 self.categories = fetchedCategories
                 let fetchedHistories = await viewModel.fetchHistory() ?? []
                 self.histories = fetchedHistories
-                print("Called from View: \(self.categories)")
-                // self.histories = fetchedHistories ?? []
+                // print("Called from View: \(self.categories)")
             }
         }
             
