@@ -7,7 +7,18 @@
 
 import SwiftUI
 
+extension String {
+    func cleanHTML() -> String {
+        return self
+            .replacingOccurrences(of: "&amp;", with: "&")
+            .replacingOccurrences(of: "amp;", with: "") // Handles repeated encodings
+    }
+}
+
+
 struct HistoryView: View {
+    
+    
     @StateObject var viewModel: HistoryViewModel
     @State var categories: [String] = []
     @State var histories: [History] = []
@@ -16,9 +27,12 @@ struct HistoryView: View {
             VStack {
                 List(self.categories, id: \.self) { category in
                     NavigationLink {
-                        PlaceHistoryView(category: category, histories: histories)
+                        DetailsHistoryView(category: category, histories: histories)
                     } label: {
-                        Text(category)
+                        VStack {
+                            Text(String(category.cleanHTML()))
+                        }
+                        
                     }
                     
                 }
