@@ -19,6 +19,7 @@ class ParseService {
                     if let error = error {
                         print("Error in Parse")
                         print("Retrying...")
+                        attemptFetch()
                     } else if let response = response as? [String: Any],
                               let historyArray = response["data"] as? NSArray {
                         // print("Type of each element in historyArray: \(historyArray.map { type(of: $0) })")
@@ -39,12 +40,12 @@ class ParseService {
                                 return nil
                             }
 
-                            guard let place = pfObject["category2"] as? String else {
+                            guard let category = pfObject["category2"] as? String else {
                                 // print("Skipping: 'category2' not found or invalid - \(pfObject)")
                                 return nil
                             }
 
-                            return History(id: UUID(), date: date, description: description, place: place)
+                            return History(id: UUID(), date: date, description: description, category: category)
                         }
                         continuation.resume(returning: history)
                     } else {

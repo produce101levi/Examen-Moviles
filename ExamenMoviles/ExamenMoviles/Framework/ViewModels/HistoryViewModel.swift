@@ -11,7 +11,7 @@ class HistoryViewModel: ObservableObject {
     static let shared = HistoryViewModel()
     var requirement: HistoryRequirement
     var dates: [String] = []
-    var places: [String] = []
+    var categories: [String] = []
     
     init(requirement: HistoryRequirement = HistoryRequirement.shared) {
         self.requirement = requirement
@@ -19,24 +19,22 @@ class HistoryViewModel: ObservableObject {
     
     func fetchPlaces() async -> [String]? {
         do {
-            let result = try await requirement.fetchHistory()
-            self.places = result.place
-            return places
+            let result = try await requirement.fetchPlaces()
+            self.categories = result.category
+            return categories
         } catch {
             print("Error fetching places")
             return nil
         }
     }
     
-    func fetchHistory() async {
+    func fetchHistory() async -> [History]? {
         do {
             let result = try await requirement.fetchHistory()
-            self.dates = result.date
-            
-            // print("Dates: \(self.dates)")
-            print("Places: \(self.places)")
+            return result
         } catch {
             print("Error in viewModel")
+            return nil
         }
     }
 }
