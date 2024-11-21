@@ -13,7 +13,7 @@ struct ExamenMovilesApp: App {
     @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            HistoryView()
         }
     }
 }
