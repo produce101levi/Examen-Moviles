@@ -7,14 +7,49 @@
 
 import SwiftUI
 
-struct HistoryView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+extension String {
+    func cleanHTML() -> String {
+        return self
+            .replacingOccurrences(of: "&amp;", with: "&")
+            .replacingOccurrences(of: "amp;", with: "") // Handles repeated encodings
     }
+}
+
+
+struct HistoryView: View {
+    
+    
+    @StateObject var viewModel: HistoryViewModel
+    @State var categories: [String] = []
+    @State var histories: [History] = []
+    var body: some View {
+        NavigationView{
+            VStack {
+                List(self.categories, id: \.self) { category in
+                    NavigationLink {
+                        DetailsHistoryView(category: category, histories: histories)
+                    } label: {
+                        VStack {
+                            Text(String(category.cleanHTML()))
+                        }
+                        
+                    }
+                    
+                }
+                
+            }
+            .navigationTitle("History")
+            .task {
+                let fetchedCategories = await viewModel.fetchPlaces() ?? []
+                self.categories = fetchedCategories
+                let fetchedHistories = await viewModel.fetchHistory() ?? []
+                self.histories = fetchedHistories
+                // print("Called from View: \(self.categories)")
+            }
+            
+        }
+            
+            
+    }
+    
 }
