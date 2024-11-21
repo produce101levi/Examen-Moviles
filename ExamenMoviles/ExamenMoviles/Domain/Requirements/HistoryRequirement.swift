@@ -6,3 +6,21 @@
 //
 
 import Foundation
+
+protocol HistoryRequirementProtocol {
+    func fetchHistory() async throws -> [History]
+}
+
+class HistoryRequirement: HistoryRequirementProtocol {
+    var repository: HistoryRepository
+    
+    static let shared = HistoryRequirement()
+    
+    init(repository: HistoryRepository = HistoryRepository.shared){
+        self.repository = repository
+    }
+    
+    func fetchHistory() async throws -> [History] {
+        return try await repository.fetchHistory()
+    }
+}

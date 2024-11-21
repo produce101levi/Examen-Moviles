@@ -8,13 +8,23 @@
 import SwiftUI
 
 struct HistoryView: View {
+    @StateObject var viewModel: HistoryViewModel
+    @State var histories: [History] = []
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            List(histories, id: \.id) { history in
+                HStack {
+                    Text(history.description)
+                    Spacer()
+                    Text(history.date)
+                    Spacer()
+                    Text(history.place)
+                }
+            }
+        }.task {
+            let fetchedHistories = await viewModel.fetchHistory()
+            self.histories = fetchedHistories!
         }
-        .padding()
+        
     }
 }
