@@ -9,22 +9,29 @@ import SwiftUI
 
 struct HistoryView: View {
     @StateObject var viewModel: HistoryViewModel
-    @State var histories: [History] = []
+    @State var places: [String] = []
     var body: some View {
-        VStack {
-            List(histories, id: \.id) { history in
-                HStack {
-                    Text(history.description)
-                    Spacer()
-                    Text(history.date)
-                    Spacer()
-                    Text(history.place)
+        NavigationView{
+            VStack {
+                Text("History List")
+                List(self.places, id: \.self) { place in
+                    NavigationLink {
+                        Text("TODO: add History Detail View")
+                    } label: {
+                        Text(place)
+                    }
+                    
                 }
+                
+            }.task {
+                let fetchedPlaces = await viewModel.fetchPlaces() ?? []
+                self.places = fetchedPlaces
+                print("Called from View: \(self.places)")
+                // self.histories = fetchedHistories ?? []
             }
-        }.task {
-            let fetchedHistories = await viewModel.fetchHistory()
-            self.histories = fetchedHistories!
         }
-        
+            
+            
     }
+    
 }

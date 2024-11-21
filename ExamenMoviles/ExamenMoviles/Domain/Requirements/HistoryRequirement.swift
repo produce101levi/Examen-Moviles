@@ -8,7 +8,7 @@
 import Foundation
 
 protocol HistoryRequirementProtocol {
-    func fetchHistory() async throws -> [History]
+    func fetchHistory() async throws -> (date: [String], place: [String], allData: [History])
 }
 
 class HistoryRequirement: HistoryRequirementProtocol {
@@ -20,7 +20,15 @@ class HistoryRequirement: HistoryRequirementProtocol {
         self.repository = repository
     }
     
-    func fetchHistory() async throws -> [History] {
-        return try await repository.fetchHistory()
+    func fetchHistory() async throws -> (date: [String], place: [String], allData: [History]) {
+        let allData = try await repository.fetchHistory()
+        
+        let date = Set(allData.map { $0.date }) // Specify type explicitly
+        let place = Set(allData.map { $0.place }) // Specify type explicitly
+        
+        //print("Places: \(place)")
+        //print("Dates: \(date)")
+        
+        return (Array(date), Array(place), allData)
     }
 }

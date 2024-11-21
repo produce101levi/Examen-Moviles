@@ -10,19 +10,33 @@ import Foundation
 class HistoryViewModel: ObservableObject {
     static let shared = HistoryViewModel()
     var requirement: HistoryRequirement
-    var history: [History] = []
+    var dates: [String] = []
+    var places: [String] = []
     
     init(requirement: HistoryRequirement = HistoryRequirement.shared) {
         self.requirement = requirement
     }
     
-    func fetchHistory() async -> [History]? {
+    func fetchPlaces() async -> [String]? {
         do {
-            self.history = try await requirement.fetchHistory()
-            return self.history
+            let result = try await requirement.fetchHistory()
+            self.places = result.place
+            return places
+        } catch {
+            print("Error fetching places")
+            return nil
+        }
+    }
+    
+    func fetchHistory() async {
+        do {
+            let result = try await requirement.fetchHistory()
+            self.dates = result.date
+            
+            // print("Dates: \(self.dates)")
+            print("Places: \(self.places)")
         } catch {
             print("Error in viewModel")
-            return nil
         }
     }
 }

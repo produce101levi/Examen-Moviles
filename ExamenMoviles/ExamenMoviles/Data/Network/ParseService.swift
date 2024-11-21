@@ -13,23 +13,47 @@ class ParseService {
     
     func fetchHistory() async throws -> [History] {
         return try await withCheckedThrowingContinuation { continuation in
-            PFCloud.callFunction(inBackground: "hello", withParameters: [:]){ (response, error) in
-                if let error = error {
-                    print("Error in Parse")
-                    continuation.resume(throwing: error)
-                } else if let response = response as? [String: Any]{
+            func attemptFetch() {
+                PFCloud.callFunction(inBackground: "hello", withParameters: [:]) { (response, error) in
                     
-                    if let historyArray = response["data"] as? [[String: Any]]{
-                        let history = historyArray.compactMap { dict -> History? in
-                            guard let date = dict["date"] as? String,
-                                  let description = dict["description"] as? String,
-                                  let place = dict["category2"] as? String else {return nil}
+                    if let error = error {
+                        print("Error in Parse")
+                        print("Retrying...")
+                    } else if let response = response as? [String: Any],
+                              let historyArray = response["data"] as? NSArray {
+                        // print("Type of each element in historyArray: \(historyArray.map { type(of: $0) })")
+                        let history = historyArray.compactMap { element -> History? in
+                            guard let pfObject = element as? PFObject else {
+                                // print("Skipping: Not a PFObject - \(element)")
+                                return nil
+                            }
+                            // print("Processing PFObject: \(pfObject)")
+
+                            guard let date = pfObject["date"] as? String else {
+                                // print("Skipping: 'date' not found or invalid - \(pfObject)")
+                                return nil
+                            }
+
+                            guard let description = pfObject["description"] as? String else {
+                               // print("Skipping: 'description' not found or invalid - \(pfObject)")
+                                return nil
+                            }
+
+                            guard let place = pfObject["category2"] as? String else {
+                                // print("Skipping: 'category2' not found or invalid - \(pfObject)")
+                                return nil
+                            }
+
                             return History(id: UUID(), date: date, description: description, place: place)
                         }
                         continuation.resume(returning: history)
+                    } else {
+                        print("Failed to cast data to NSArray")
+                        continuation.resume(throwing: NSError(domain: "ParseError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Data is not in expected format"]))
                     }
                 }
             }
+            attemptFetch()
         }
     }
 }

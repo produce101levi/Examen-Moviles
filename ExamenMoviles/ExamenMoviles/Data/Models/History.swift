@@ -13,3 +13,8 @@ struct History: Identifiable {
     var description: String
     var place: String
 }
+
+struct Place: Identifiable {
+    let id = UUID()
+    let name: String
+}
