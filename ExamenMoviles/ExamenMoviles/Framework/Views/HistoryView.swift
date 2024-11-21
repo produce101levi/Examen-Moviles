@@ -14,7 +14,6 @@ struct HistoryView: View {
     var body: some View {
         NavigationView{
             VStack {
-                Text("History List")
                 List(self.categories, id: \.self) { category in
                     NavigationLink {
                         PlaceHistoryView(category: category, histories: histories)
@@ -24,13 +23,16 @@ struct HistoryView: View {
                     
                 }
                 
-            }.task {
+            }
+            .navigationTitle("History")
+            .task {
                 let fetchedCategories = await viewModel.fetchPlaces() ?? []
                 self.categories = fetchedCategories
                 let fetchedHistories = await viewModel.fetchHistory() ?? []
                 self.histories = fetchedHistories
                 // print("Called from View: \(self.categories)")
             }
+            
         }
             
             
